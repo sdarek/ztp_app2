@@ -20,4 +20,8 @@ public class NotificationRepository implements PanacheRepository<NotificationEnt
     public List<NotificationEntity> findCreated() {
         return list("status", "CREATED");
     }
+
+    public List<NotificationEntity> findReadyForDispatch() {
+        return list("status in ?1", List.of("CREATED", "SCHEDULED"));
+    }
 }

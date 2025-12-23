@@ -26,7 +26,7 @@ public class NotificationWorker {
         try {
             appService.markSending(notification);
 
-            boolean success = random.nextInt(10) < 7;
+            boolean success = random.nextInt(10) < 7; // 70% szans na sukces
 
             if (success) {
                 appService.markSent(notification);

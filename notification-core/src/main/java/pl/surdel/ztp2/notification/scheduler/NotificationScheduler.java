@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import pl.surdel.ztp2.notification.application.NotificationApplicationService;
 import pl.surdel.ztp2.notification.domain.model.Notification;
+import pl.surdel.ztp2.notification.domain.model.NotificationStatus;
 import pl.surdel.ztp2.notification.messaging.NotificationProducer;
 import pl.surdel.ztp2.notification.persistence.NotificationEntity;
 import pl.surdel.ztp2.notification.persistence.NotificationMapper;
@@ -28,21 +29,22 @@ public class NotificationScheduler {
         this.producer = producer;
     }
 
-    @Scheduled(every = "30s")
+    @Scheduled(every = "20s")
     @Transactional
     void scheduleNotifications() {
 
-        List<NotificationEntity> created =
-                repository.findCreated();
+        List<NotificationEntity> toDispatch =
+                repository.findReadyForDispatch();
 
-        for (NotificationEntity entity : created) {
+        for (NotificationEntity entity : toDispatch) {
 
-            Notification notification =
-                    NotificationMapper.toDomain(entity);
+            Notification notification = NotificationMapper.toDomain(entity);
 
             if (appService.canBeScheduled(notification)) {
                 System.err.println("### SCHEDULER SENDING TO RABBIT: " + notification.getId());
-                appService.markScheduled(notification, entity);
+                if (notification.getStatus() == NotificationStatus.CREATED) {
+                    appService.markScheduled(notification, entity);
+                }
                 producer.send(notification.getId().toString());
             }
         }
