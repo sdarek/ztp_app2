@@ -40,6 +40,32 @@ public class Notification {
         this.retryCount = 0;
     }
 
+    public static Notification restore(
+            UUID id,
+            String content,
+            ChannelType channel,
+            String recipient,
+            ZoneId recipientTimezone,
+            Priority priority,
+            Instant plannedSendAt,
+            NotificationStatus status,
+            int retryCount
+    ) {
+        Notification notification = new Notification(
+                id,
+                content,
+                channel,
+                recipient,
+                recipientTimezone,
+                priority,
+                plannedSendAt
+        );
+        notification.status = status;
+        notification.retryCount = retryCount;
+        return notification;
+    }
+
+
     public void changeStatus(NotificationStatus newStatus, StatusTransitionPolicy policy) {
         if (!policy.canTransition(this.status, newStatus)) {
             throw new IllegalStateException(

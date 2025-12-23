@@ -2,6 +2,7 @@ package pl.surdel.ztp2.notification.persistence;
 
 import pl.surdel.ztp2.notification.domain.model.ChannelType;
 import pl.surdel.ztp2.notification.domain.model.Notification;
+import pl.surdel.ztp2.notification.domain.model.NotificationStatus;
 import pl.surdel.ztp2.notification.domain.model.Priority;
 
 import java.time.ZoneId;
@@ -22,14 +23,16 @@ public class NotificationMapper {
     }
 
     public static Notification toDomain(NotificationEntity e) {
-        return new Notification(
+        return Notification.restore(
                 e.id,
                 e.content,
                 ChannelType.valueOf(e.channel),
                 e.recipient,
                 ZoneId.of(e.recipientTimezone),
                 Priority.valueOf(e.priority),
-                e.plannedSendAt
+                e.plannedSendAt,
+                NotificationStatus.valueOf(e.status),
+                e.retryCount
         );
     }
 }

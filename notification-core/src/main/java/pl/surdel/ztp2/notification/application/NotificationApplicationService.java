@@ -55,4 +55,14 @@ public class NotificationApplicationService {
         entity.status = notification.getStatus().name();
         entity.retryCount = notification.getRetryCount();
     }
+
+    public boolean canBeScheduled(Notification notification) {
+        return domainService.canBeSentNow(notification);
+    }
+
+    @Transactional
+    public void markScheduled(Notification notification, NotificationEntity entity) {
+        domainService.markScheduled(notification);
+        entity.status = notification.getStatus().name();
+    }
 }
