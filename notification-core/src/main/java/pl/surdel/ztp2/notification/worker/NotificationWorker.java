@@ -21,24 +21,20 @@ public class NotificationWorker {
 
     @Transactional
     public void process(UUID notificationId) {
+        Notification notification = appService.getRequired(notificationId);
 
-        NotificationEntity entity = appService.getEntity(notificationId);
+        try {
+            appService.markSending(notification);
 
-        // SENDING
-        entity.status = NotificationStatus.SENDING.name();
+            boolean success = random.nextInt(10) < 7;
 
-        boolean success = random.nextInt(10) < 7;
-
-        if (success) {
-            entity.status = NotificationStatus.SENT.name();
-        } else {
-            entity.retryCount++;
-
-            if (entity.retryCount >= 3) {
-                entity.status = NotificationStatus.FAILED.name();
+            if (success) {
+                appService.markSent(notification);
             } else {
-                entity.status = NotificationStatus.SCHEDULED.name();
+                appService.markFailed(notification);
             }
+        } catch (Exception e) {
+            appService.markFailed(notification);
         }
     }
 }

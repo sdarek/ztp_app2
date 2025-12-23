@@ -1,10 +1,9 @@
 package pl.surdel.ztp2.notification.messaging;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import pl.surdel.ztp2.notification.worker.NotificationWorker;
-
 import java.util.UUID;
 
 @ApplicationScoped
@@ -16,7 +15,7 @@ public class NotificationDispatcher {
     }
 
     @Incoming("notification-in")
-    @Transactional
+    @Blocking
     public void consume(String notificationId) {
         System.err.println("### DISPATCHER RECEIVED ### " + notificationId);
         worker.process(UUID.fromString(notificationId));
