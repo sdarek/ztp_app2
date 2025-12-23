@@ -84,6 +84,10 @@
             <artifactId>lombok</artifactId>
             <version>1.18.38</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-messaging-rabbitmq</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

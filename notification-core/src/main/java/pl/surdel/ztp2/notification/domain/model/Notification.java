@@ -78,4 +78,24 @@ public class Notification {
     public boolean isTerminal() {
         return status == NotificationStatus.SENT || status == NotificationStatus.FAILED || status == NotificationStatus.CANCELED;
     }
+
+    public void markSending() {
+        this.status = NotificationStatus.SENDING;
+    }
+
+    public void markSent() {
+        this.status = NotificationStatus.SENT;
+    }
+
+    public void markFailed() {
+        this.status = NotificationStatus.FAILED;
+    }
+
+    public void markScheduled() {
+        this.status = NotificationStatus.SCHEDULED;
+    }
+
+    public void incrementRetry() {
+        this.retryCount++;
+    }
 }

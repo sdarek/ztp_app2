@@ -65,4 +65,45 @@ public class NotificationApplicationService {
         domainService.markScheduled(notification);
         entity.status = notification.getStatus().name();
     }
+
+    public Notification getRequired(UUID id) {
+        return repository.findOptionalById(id)
+                .map(NotificationMapper::toDomain)
+                .orElseThrow(() -> new IllegalStateException("Notification not found"));
+    }
+
+    @Transactional
+    public void markSending(Notification notification) {
+        NotificationEntity entity = repository.findById(notification.getId());
+        notification.markSending();
+        entity.status = notification.getStatus().name();
+    }
+
+    @Transactional
+    public void markSent(Notification notification) {
+        NotificationEntity entity = repository.findById(notification.getId());
+        notification.markSent();
+        entity.status = notification.getStatus().name();
+    }
+
+    @Transactional
+    public void markFailed(Notification notification) {
+        NotificationEntity entity = repository.findById(notification.getId());
+
+        notification.incrementRetry();
+
+        if (notification.getRetryCount() >= 3) {
+            notification.markFailed();
+        } else {
+            notification.markScheduled(); // wraca do kolejki
+        }
+
+        entity.status = notification.getStatus().name();
+        entity.retryCount = notification.getRetryCount();
+    }
+
+    public NotificationEntity getEntity(UUID id) {
+        return repository.findOptionalById(id)
+                .orElseThrow(() -> new IllegalStateException("Notification not found"));
+    }
 }
