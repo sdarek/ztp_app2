@@ -16,49 +16,15 @@ public class NotificationService {
         this.quietHoursPolicy = quietHoursPolicy;
     }
 
-    public Notification create(Notification notification) {
-        return notification;
-    }
-
     public boolean canBeSentNow(Notification notification) {
-        return !quietHoursPolicy.isWithinQuietHours(
-                notification.getPlannedSendAt(),
-                notification.getRecipientTimezone()
-        );
+        return !quietHoursPolicy.isWithinQuietHours(notification.getPlannedSendAt(), notification.getRecipientTimezone());
     }
 
     public void markScheduled(Notification notification) {
-        notification.changeStatus(
-                NotificationStatus.SCHEDULED,
-                statusPolicy
-        );
-    }
-
-    public void markSending(Notification notification) {
-        notification.changeStatus(
-                NotificationStatus.SENDING,
-                statusPolicy
-        );
-    }
-
-    public void markSent(Notification notification) {
-        notification.changeStatus(
-                NotificationStatus.SENT,
-                statusPolicy
-        );
-    }
-
-    public void markFailed(Notification notification) {
-        notification.changeStatus(
-                NotificationStatus.FAILED,
-                statusPolicy
-        );
+        notification.changeStatus(NotificationStatus.SCHEDULED, statusPolicy);
     }
 
     public void cancel(Notification notification) {
-        notification.changeStatus(
-                NotificationStatus.CANCELED,
-                statusPolicy
-        );
+        notification.changeStatus(NotificationStatus.CANCELED, statusPolicy);
     }
 }
