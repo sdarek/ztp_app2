@@ -23,7 +23,7 @@ public class PushWorker {
         UUID id = UUID.fromString(notificationId);
         System.out.println("[PUSH-WORKER] Processing: " + id);
 
-        boolean success = simulator.simulate(id);
+        boolean success = simulator.ship(id);
 
         if (success) {
             registry.counter("notifications_sent_total", "channel", "push").increment();

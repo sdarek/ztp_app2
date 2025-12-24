@@ -36,7 +36,10 @@ public class NotificationScheduler {
                 if (notification.getStatus() == NotificationStatus.CREATED) {
                     appService.markScheduled(notification, entity);
                 }
-                producer.send(notification.getId().toString());
+                producer.send(
+                        notification.getId(),
+                        notification.getChannel()
+                );
             }
         }
     }
