@@ -42,6 +42,13 @@ public class NotificationResource {
         return Response.status(Response.Status.CREATED).entity(resp).build();
     }
 
+    @POST
+    @Path("/{id}/force-send")
+    public Response forceSend(@PathParam("id") UUID id) {
+        appService.forceSend(id);
+        return Response.accepted().build();
+    }
+
     @GET
     @Path("/{id}")
     public NotificationStatusResponse getStatus(@PathParam("id") UUID id) {

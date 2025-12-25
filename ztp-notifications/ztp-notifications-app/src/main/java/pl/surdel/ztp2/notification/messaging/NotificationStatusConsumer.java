@@ -6,16 +6,21 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import pl.surdel.ztp2.notification.domain.dto.StatusUpdate;
+import pl.surdel.ztp2.notification.domain.model.Notification;
+import pl.surdel.ztp2.notification.domain.service.NotificationService;
 import pl.surdel.ztp2.notification.persistence.NotificationEntity;
+import pl.surdel.ztp2.notification.persistence.NotificationMapper;
 import pl.surdel.ztp2.notification.persistence.NotificationRepository;
 
 @ApplicationScoped
 public class NotificationStatusConsumer {
 
     private final NotificationRepository repository;
+    private final NotificationService domainService;
 
-    public NotificationStatusConsumer(NotificationRepository repository) {
+    public NotificationStatusConsumer(NotificationRepository repository, NotificationService domainService) {
         this.repository = repository;
+        this.domainService = domainService;
     }
 
     @Incoming("status-updates-in")
@@ -26,14 +31,17 @@ public class NotificationStatusConsumer {
         StatusUpdate update = json.mapTo(StatusUpdate.class);
 
         NotificationEntity entity = repository.findById(update.id);
-        if (entity == null) {
-            return;
-        }
+        if (entity == null) return;
 
-        entity.status = update.status;
+        Notification notification = NotificationMapper.toDomain(entity);
 
-        if ("FAILED".equals(update.status)) {
-            entity.retryCount++;
-        }
+        boolean success = "SENT".equals(update.status);
+
+        // domena decyduje: SENT / FAILED_RETRY / FAILED_FINAL + retryCount
+        domainService.handleSendResult(notification, success);
+
+        // zapis wyniku do DB
+        entity.status = notification.getStatus().name();
+        entity.retryCount = notification.getRetryCount();
     }
 }

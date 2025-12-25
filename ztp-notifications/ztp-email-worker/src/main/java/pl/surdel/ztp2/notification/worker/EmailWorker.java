@@ -36,7 +36,8 @@ public class EmailWorker {
         String status = success ? "SENT" : "FAILED";
         statusEmitter.send(new StatusUpdate(id, status));
 
-        // Aktualizacja metryk [9, 10]
-        registry.counter("notifications_sent_total", "channel", "email").increment();
+        if (success) {
+            registry.counter("notifications_sent_total", "channel", "email").increment();
+        }
     }
 }

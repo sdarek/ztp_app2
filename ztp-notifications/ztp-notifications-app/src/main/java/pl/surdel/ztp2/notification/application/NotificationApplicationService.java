@@ -49,4 +49,23 @@ public class NotificationApplicationService {
         domainService.markScheduled(notification);
         entity.status = notification.getStatus().name();
     }
+
+    @Transactional
+    public void markSending(Notification notification, NotificationEntity entity) {
+        domainService.markSending(notification);
+        entity.status = notification.getStatus().name();
+    }
+
+    @Transactional
+    public void forceSend(UUID id) {
+        NotificationEntity entity = repository.findOptionalById(id)
+                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Notification not found"));
+
+        Notification notification = NotificationMapper.toDomain(entity);
+
+        domainService.forceSend(notification);
+
+        entity.status = notification.getStatus().name();
+        entity.plannedSendAt = java.time.Instant.now(); // NATYCHMIAST
+    }
 }

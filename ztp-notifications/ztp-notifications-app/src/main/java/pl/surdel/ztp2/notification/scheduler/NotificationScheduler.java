@@ -32,15 +32,20 @@ public class NotificationScheduler {
         for (NotificationEntity entity : toDispatch) {
             Notification notification = NotificationMapper.toDomain(entity);
 
-            if (appService.canBeScheduled(notification)) {
+            if (isPlannedTimeReached(notification) && appService.canBeScheduled(notification)) {
+
                 if (notification.getStatus() == NotificationStatus.CREATED) {
                     appService.markScheduled(notification, entity);
                 }
-                producer.send(
-                        notification.getId(),
-                        notification.getChannel()
-                );
+
+                appService.markSending(notification, entity);
+
+                producer.send(notification.getId(), notification.getChannel());
             }
         }
+    }
+
+    private boolean isPlannedTimeReached(Notification notification) {
+        return !notification.getPlannedSendAt().isAfter(java.time.Instant.now());
     }
 }

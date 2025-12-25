@@ -8,8 +8,8 @@ import java.time.ZonedDateTime;
 
 @ApplicationScoped
 public class QuietHoursPolicy {
-    private static final LocalTime QUIET_HOURS_START = LocalTime.of(23, 59);
-    private static final LocalTime QUIET_HOURS_END = LocalTime.of(0, 1);
+    private static final LocalTime QUIET_HOURS_START = LocalTime.of(22, 0);
+    private static final LocalTime QUIET_HOURS_END = LocalTime.of(7, 0);
 
     public boolean isWithinQuietHours(Instant plannedSendAt, ZoneId recipientZone) {
         ZonedDateTime recipientTime = plannedSendAt.atZone(recipientZone);
