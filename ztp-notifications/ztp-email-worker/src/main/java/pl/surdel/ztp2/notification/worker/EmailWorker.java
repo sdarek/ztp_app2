@@ -15,7 +15,6 @@ public class EmailWorker {
     private final ShippingSimulator simulator;
     private final MeterRegistry registry;
 
-    // Emiter do wysyłania statusu zwrotnego do RabbitMQ [6]
     @Channel("status-updates-out")
     Emitter<StatusUpdate> statusEmitter;
 
@@ -25,14 +24,12 @@ public class EmailWorker {
     }
 
     @Incoming("email-in")
-    @Blocking // Przetwarzanie blokujące ze względu na symulator [3]
+    @Blocking
     public void consume(String notificationId) {
         UUID id = UUID.fromString(notificationId);
 
-        // Logika symulacji (30% szans na błąd zgodnie ze źródłem [7])
         boolean success = simulator.ship(id);
 
-        // Wysłanie informacji zwrotnej [5, 8]
         String status = success ? "SENT" : "FAILED";
         statusEmitter.send(new StatusUpdate(id, status));
 

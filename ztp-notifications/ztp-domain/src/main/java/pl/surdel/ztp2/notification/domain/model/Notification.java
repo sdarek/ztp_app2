@@ -47,9 +47,5 @@ public class Notification {
         this.status = newStatus;
     }
 
-    public void markSending() { this.status = NotificationStatus.SENDING; }
-    public void markSent() { this.status = NotificationStatus.SENT; }
-    public void markFailed() { this.status = NotificationStatus.FAILED_RETRY; }
-    public void markScheduled() { this.status = NotificationStatus.SCHEDULED; }
     public void incrementRetry() { this.retryCount++; }
 }

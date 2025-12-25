@@ -21,7 +21,6 @@ public class NotificationApplicationService {
 
     @Transactional
     public Notification create(Notification notification) {
-        // Logika domenowa (z modułu ztp-domain)
         NotificationEntity entity = NotificationMapper.toEntity(notification);
         repository.persist(entity);
         return notification;
@@ -66,6 +65,6 @@ public class NotificationApplicationService {
         domainService.forceSend(notification);
 
         entity.status = notification.getStatus().name();
-        entity.plannedSendAt = java.time.Instant.now(); // NATYCHMIAST
+        entity.plannedSendAt = java.time.Instant.now();
     }
 }

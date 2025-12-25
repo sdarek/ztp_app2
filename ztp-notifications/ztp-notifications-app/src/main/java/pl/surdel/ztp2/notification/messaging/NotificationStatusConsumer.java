@@ -37,10 +37,8 @@ public class NotificationStatusConsumer {
 
         boolean success = "SENT".equals(update.status);
 
-        // domena decyduje: SENT / FAILED_RETRY / FAILED_FINAL + retryCount
         domainService.handleSendResult(notification, success);
 
-        // zapis wyniku do DB
         entity.status = notification.getStatus().name();
         entity.retryCount = notification.getRetryCount();
     }
