@@ -11,8 +11,9 @@ public class StatusTransitionPolicy {
     private static final Map<NotificationStatus, Set<NotificationStatus>> ALLOWED_TRANSITIONS = Map.of(
             NotificationStatus.CREATED, EnumSet.of(NotificationStatus.SCHEDULED, NotificationStatus.CANCELED),
             NotificationStatus.SCHEDULED, EnumSet.of(NotificationStatus.SENDING, NotificationStatus.CANCELED),
-            NotificationStatus.SENDING, EnumSet.of(NotificationStatus.SENT, NotificationStatus.FAILED),
-            NotificationStatus.FAILED, EnumSet.noneOf(NotificationStatus.class),
+            NotificationStatus.SENDING, EnumSet.of(NotificationStatus.SENT, NotificationStatus.FAILED_RETRY, NotificationStatus.FAILED_FINAL),
+            NotificationStatus.FAILED_RETRY, EnumSet.of(NotificationStatus.SCHEDULED, NotificationStatus.CANCELED),
+            NotificationStatus.FAILED_FINAL, EnumSet.noneOf(NotificationStatus.class),
             NotificationStatus.SENT, EnumSet.noneOf(NotificationStatus.class),
             NotificationStatus.CANCELED, EnumSet.noneOf(NotificationStatus.class)
     );

@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     ports:
-      - "5432:5432"
+      - "5442:5432"
     volumes:
       - notification_pg_data:/var/lib/postgresql/data
 
@@ -21,6 +21,52 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  notifications-app:
+    build:
+      context: ./ztp-notifications-app
+    container_name: notifications-app
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "8081:8080"
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/notification_db
+      QUARKUS_DATASOURCE_USERNAME: admin
+      QUARKUS_DATASOURCE_PASSWORD: admin
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+
+  email-worker:
+    build:
+      context: ./ztp-email-worker
+    container_name: email-worker
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8082:8081"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+
+  push-worker:
+    build:
+      context: ./ztp-push-worker
+    container_name: push-worker
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8083:8082"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
 
 volumes:
   notification_pg_data:

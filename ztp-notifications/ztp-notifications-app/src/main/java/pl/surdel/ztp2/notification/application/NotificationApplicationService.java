@@ -21,7 +21,6 @@ public class NotificationApplicationService {
 
     @Transactional
     public Notification create(Notification notification) {
-        // Logika domenowa (z modułu ztp-domain)
         NotificationEntity entity = NotificationMapper.toEntity(notification);
         repository.persist(entity);
         return notification;
@@ -48,5 +47,24 @@ public class NotificationApplicationService {
     public void markScheduled(Notification notification, NotificationEntity entity) {
         domainService.markScheduled(notification);
         entity.status = notification.getStatus().name();
+    }
+
+    @Transactional
+    public void markSending(Notification notification, NotificationEntity entity) {
+        domainService.markSending(notification);
+        entity.status = notification.getStatus().name();
+    }
+
+    @Transactional
+    public void forceSend(UUID id) {
+        NotificationEntity entity = repository.findOptionalById(id)
+                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Notification not found"));
+
+        Notification notification = NotificationMapper.toDomain(entity);
+
+        domainService.forceSend(notification);
+
+        entity.status = notification.getStatus().name();
+        entity.plannedSendAt = java.time.Instant.now();
     }
 }
